@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PCM — Cómo se digitaliza la voz · Guía interactiva</title>
+<style>
+:root {
+  --bg: #0f1420; --panel: #1a2235; --panel2: #222c45;
+  --text: #e8edf7; --muted: #94a3c0;
+  --accent: #4f8cff; --accent2: #7c5cff;
+  --ok: #2ecc8f; --bad: #ff5d6c; --warn: #ffb84f;
+  --radius: 14px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; font-family: "Segoe UI", system-ui, sans-serif;
+  background: linear-gradient(180deg, #0c111c 0%, #121a2b 100%);
+  color: var(--text); line-height: 1.6;
+}
+main { max-width: 950px; margin: 0 auto; padding: 24px 20px 80px; }
+h1 { font-size: 1.7rem; margin: 10px 0 4px; }
+h2 { font-size: 1.35rem; margin-top: 0; }
+h3 { font-size: 1.05rem; color: var(--accent); }
+.muted { color: var(--muted); }
+.small { font-size: 0.85rem; }
+b { color: #fff; }
+a.back { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+a.back:hover { text-decoration: underline; }
+
+.step-banner {
+  display: flex; align-items: center; gap: 14px; margin: 26px 0 10px;
+}
+.step-num {
+  width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+  background: var(--accent); color: #fff; font-weight: 800; font-size: 1.3rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.step-banner h2 { margin: 0; }
+
+.card {
+  background: var(--panel); border: 1px solid #2a3553;
+  border-radius: var(--radius); padding: 22px; margin-bottom: 18px;
+}
+.definition {
+  background: rgba(79,140,255,0.08); border-left: 4px solid var(--accent);
+  border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 14px 0;
+}
+.definition::before { content: "📖 Definición"; display: block; font-weight: 700; color: var(--accent); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.example {
+  background: rgba(46,204,143,0.07); border-left: 4px solid var(--ok);
+  border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 14px 0;
+}
+.example::before { content: "💡 Ejemplo"; display: block; font-weight: 700; color: var(--ok); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.warning {
+  background: rgba(255,93,108,0.07); border-left: 4px solid var(--bad);
+  border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 14px 0;
+}
+.warning::before { content: "⚠ Cuidado"; display: block; font-weight: 700; color: var(--bad); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.formula {
+  background: #0b1020; border: 1px solid #2a3553; border-radius: 10px;
+  padding: 12px 16px; margin: 12px 0; font-family: Consolas, monospace;
+  font-size: 1.05rem; color: #9dbcff; text-align: center;
+}
+
+canvas { width: 100%; border-radius: 10px; background: #0b1020; display: block; border: 1px solid #1c2742; }
+.controls { display: flex; gap: 18px; flex-wrap: wrap; margin: 12px 0; align-items: center; }
+.ctl { display: flex; flex-direction: column; gap: 3px; font-size: 0.85rem; color: var(--muted); min-width: 170px; }
+.ctl input[type=range] { accent-color: var(--accent); width: 100%; }
+.readouts { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; font-size: 0.92rem; }
+.ro { background: var(--panel2); padding: 7px 13px; border-radius: 9px; }
+.ro b { color: var(--accent); }
+.ro.good b { color: var(--ok); }
+.ro.alert b { color: var(--bad); }
+.btn {
+  background: var(--panel2); color: var(--text); border: 1px solid #34406a;
+  padding: 8px 16px; border-radius: 10px; cursor: pointer; font-size: 0.92rem;
+}
+.btn:hover { background: #2b3759; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.btn.small { padding: 4px 10px; font-size: 0.8rem; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+table.codes {
+  width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px;
+}
+table.codes th, table.codes td {
+  border: 1px solid #2a3553; padding: 6px 10px; text-align: center;
+}
+table.codes th { background: var(--panel2); color: var(--muted); font-weight: 600; }
+table.codes td.bin { font-family: Consolas, monospace; color: var(--ok); }
+
+.bitstream {
+  font-family: Consolas, monospace; font-size: 1rem; word-break: break-all;
+  background: #0b1020; border: 1px solid #2a3553; border-radius: 10px;
+  padding: 12px 14px; margin-top: 10px; color: var(--ok); min-height: 46px;
+}
+.bitstream span.current { background: var(--accent); color: #fff; border-radius: 3px; }
+
+.pipeline { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: center; margin: 14px 0; }
+.pipe-box {
+  background: var(--panel2); border: 1.5px solid #34406a; border-radius: 10px;
+  padding: 10px 14px; text-align: center; font-size: 0.85rem; min-width: 120px;
+}
+.pipe-box .icon { font-size: 1.4rem; }
+.pipe-arrow { color: var(--accent); font-size: 1.3rem; font-weight: 700; }
+.pipe-box.hl { border-color: var(--accent); background: rgba(79,140,255,0.12); }
+
+.quiz-opt {
+  display: block; background: var(--panel2); border: 1.5px solid #34406a;
+  border-radius: 10px; padding: 11px 14px; margin: 8px 0; cursor: pointer;
+}
+.quiz-opt:hover { border-color: var(--accent); }
+.quiz-opt.ok { border-color: var(--ok); background: rgba(46,204,143,0.12); }
+.quiz-opt.bad { border-color: var(--bad); background: rgba(255,93,108,0.1); }
+.quiz-fb { margin: 6px 0 14px; padding: 10px 14px; border-radius: 10px; display: none; }
+.quiz-fb.show { display: block; }
+.quiz-fb.ok { background: rgba(46,204,143,0.1); border: 1px solid var(--ok); }
+.quiz-fb.bad { background: rgba(255,93,108,0.08); border: 1px solid var(--bad); }
+
+.toc { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+.toc a {
+  background: var(--panel2); border: 1px solid #34406a; color: var(--text);
+  border-radius: 999px; padding: 6px 14px; font-size: 0.85rem; text-decoration: none;
+}
+.toc a:hover { border-color: var(--accent); }
+footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 20px; }
+</style>
+</head>
+<body>
+<main>
+
+<a class="back" href="index.html">← Volver al test de Parcial 1</a>
+<h1>🎙️ ¿Cómo se convierte la VOZ en BITS?</h1>
+<p class="muted">Guía interactiva de <b>PCM (Pulse Code Modulation)</b>: la técnica con la que la telefonía digital, VoIP y los CDs convierten una señal analógica en una secuencia de unos y ceros. Movés los controles, ves qué pasa.</p>
+
+<div class="toc">
+  <a href="#problema">El problema</a>
+  <a href="#paso1">① Muestreo</a>
+  <a href="#paso2">② Cuantización</a>
+  <a href="#paso3">③ Codificación</a>
+  <a href="#completo">Pipeline completo</a>
+  <a href="#companding">Companding</a>
+  <a href="#quiz">Mini quiz</a>
+</div>
+
+<!-- ============ EL PROBLEMA ============ -->
+<section class="card" id="problema">
+  <h2>El problema: la voz es analógica, la red es digital</h2>
+  <p>Cuando hablás, tus cuerdas vocales generan una <b>onda de presión continua</b>: una señal <b>analógica</b> que puede tomar infinitos valores y cambia suavemente en el tiempo. Pero una red digital solo sabe transportar <b>bits</b>: valores discretos, 0 o 1.</p>
+
+  <div class="definition">
+    <b>Señal analógica:</b> varía de forma continua y puede tomar infinitos valores dentro de un rango (la voz, la temperatura, el sonido).<br>
+    <b>Señal digital:</b> toma valores discretos (niveles que representan 0 y 1).<br>
+    <b>Digitalización:</b> el proceso de convertir datos analógicos en una señal digital. La técnica principal es <b>PCM</b>.
+  </div>
+
+  <p>¿Por qué molestarse en digitalizar? Porque la transmisión digital tiene ventajas enormes: los <b>repetidores regeneran</b> los bits (el ruido no se acumula), se pueden <b>detectar y corregir errores</b>, es fácil <b>multiplexar</b> muchas conversaciones en un mismo enlace, y cifrar o comprimir es simple.</p>
+
+  <div class="pipeline">
+    <div class="pipe-box"><div class="icon">🗣️</div>Voz analógica<br><span class="muted small">onda continua</span></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box hl"><div class="icon">⏱️</div>① MUESTREO<br><span class="muted small">fotos periódicas</span></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box hl"><div class="icon">📏</div>② CUANTIZACIÓN<br><span class="muted small">redondear a niveles</span></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box hl"><div class="icon">🔢</div>③ CODIFICACIÓN<br><span class="muted small">nivel → binario</span></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box"><div class="icon">📡</div>Bits<br><span class="muted small">01101001...</span></div>
+  </div>
+
+  <div class="example">
+    La voz telefónica se limita a la banda de <b>300–3400 Hz</b> (se asigna un canal de <b>4 kHz</b> con margen). Con PCM estándar se convierte en un flujo de <b>64.000 bits por segundo</b> — el famoso canal <b>DS0</b>, el ladrillo básico de toda la telefonía digital. En esta guía vas a ver de dónde sale ese número.
+  </div>
+</section>
+
+<!-- ============ PASO 1: MUESTREO ============ -->
+<div class="step-banner" id="paso1"><div class="step-num">1</div><h2>MUESTREO — sacarle "fotos" a la señal</h2></div>
+<section class="card">
+  <p>El primer paso es medir la amplitud de la señal a intervalos regulares: como filmar la onda sacando <b>fotos periódicas</b>. Cada foto es una <b>muestra</b>.</p>
+
+  <div class="definition">
+    <b>Muestreo:</b> tomar valores (muestras) de la señal analógica cada T<sub>s</sub> segundos. La cantidad de muestras por segundo es la <b>frecuencia de muestreo f<sub>s</sub></b>.
+  </div>
+
+  <p>¿Cada cuánto hay que sacar las fotos? Lo responde el <b>teorema de muestreo (Nyquist)</b>:</p>
+  <div class="formula">f<sub>s</sub> ≥ 2 · f<sub>max</sub></div>
+  <p>Hay que muestrear al menos al <b>doble de la frecuencia más alta</b> de la señal. Si se cumple, la señal original puede reconstruirse perfectamente a partir de las muestras. Si no se cumple, aparece el <b>aliasing</b>: las muestras son tan espaciadas que "se inventan" una señal más lenta que no existe.</p>
+
+  <h3>🔬 Probalo: mové la frecuencia de muestreo</h3>
+  <p class="muted small">La onda verde es la señal analógica original. Los puntos azules son las muestras. La línea punteada naranja es la señal que el receptor reconstruiría con esas muestras. Bajá f<sub>s</sub> por debajo de 2×f<sub>max</sub> y mirá el desastre.</p>
+  <canvas id="cv-sampling" height="240"></canvas>
+  <div class="controls">
+    <label class="ctl"><span id="lbl-fs"></span><input type="range" id="sl-fs" min="0.6" max="4" step="0.1" value="2.4"></label>
+    <button class="btn small" id="btn-anim-samp">▶ Animar muestreo</button>
+  </div>
+  <div class="readouts">
+    <div class="ro" id="ro-fs-real"></div>
+    <div class="ro" id="ro-nyq"></div>
+  </div>
+
+  <div class="example">
+    <b>Voz telefónica:</b> f<sub>max</sub> = 4000 Hz → f<sub>s</sub> = 2 × 4000 = <b>8000 muestras por segundo</b> (una muestra cada 125 μs).<br>
+    <b>CD de audio:</b> el oído llega a ~20 kHz → f<sub>s</sub> = 44.100 muestras/s (un poco más del doble, por margen).
+  </div>
+
+  <div class="warning">
+    Si muestreás una señal de 4 kHz a solo 5000 muestras/s (menos del doble), el receptor reconstruye una señal <b>falsa de menor frecuencia</b> (aliasing) y la voz queda irreconocible. Por eso antes de muestrear se usa un filtro que corta todo lo que esté por encima de f<sub>max</sub>.
+  </div>
+</section>
+
+<!-- ============ PASO 2: CUANTIZACIÓN ============ -->
+<div class="step-banner" id="paso2"><div class="step-num">2</div><h2>CUANTIZACIÓN — redondear cada muestra a un nivel</h2></div>
+<section class="card">
+  <p>Cada muestra todavía es un valor analógico exacto (por ejemplo, 0,4137 V) con infinitos decimales posibles. Imposible de representar con bits finitos. La solución: definir una <b>regla de niveles permitidos</b> y redondear cada muestra al nivel más cercano.</p>
+
+  <div class="definition">
+    <b>Cuantización:</b> aproximar cada muestra al más cercano de un conjunto finito de niveles discretos. Con <b>n bits</b> por muestra hay <b>2<sup>n</sup> niveles</b> disponibles.
+  </div>
+
+  <div class="formula">niveles = 2<sup>n</sup> &nbsp;&nbsp;|&nbsp;&nbsp; 4 bits → 16 niveles · 8 bits → 256 niveles · 16 bits → 65.536 niveles</div>
+
+  <p>El redondeo introduce un error inevitable: la diferencia entre el valor real y el nivel elegido. Ese error se percibe como un ruido de fondo llamado <b>ruido de cuantización</b>. Cuantos más niveles (más bits), más chicos los escalones y menor el ruido — pero más bits hay que transmitir. Ese es <b>EL compromiso central de PCM</b>.</p>
+
+  <h3>🔬 Probalo: mové la cantidad de bits</h3>
+  <p class="muted small">Las líneas horizontales son los niveles permitidos. La escalera azul es la señal cuantizada. La zona roja es el error de cuantización (la diferencia con la señal real). Mirá cómo con 2 bits la escalera es una caricatura de la señal, y con 7 casi no se distingue.</p>
+  <canvas id="cv-quant" height="260"></canvas>
+  <div class="controls">
+    <label class="ctl"><span id="lbl-bits"></span><input type="range" id="sl-bits" min="2" max="7" step="1" value="3"></label>
+  </div>
+  <div class="readouts">
+    <div class="ro" id="ro-levels"></div>
+    <div class="ro" id="ro-snrq"></div>
+    <div class="ro" id="ro-err"></div>
+  </div>
+
+  <div class="example">
+    <b>Telefonía:</b> 8 bits → 256 niveles: suficiente para voz inteligible y natural.<br>
+    <b>CD de audio:</b> 16 bits → 65.536 niveles: el ruido de cuantización queda por debajo de lo audible.<br>
+    Regla práctica: cada bit extra mejora la relación señal/ruido de cuantización en ≈ <b>6 dB</b> (SNR<sub>q</sub> ≈ 6,02·n + 1,76 dB).
+  </div>
+</section>
+
+<!-- ============ PASO 3: CODIFICACIÓN ============ -->
+<div class="step-banner" id="paso3"><div class="step-num">3</div><h2>CODIFICACIÓN — cada nivel se vuelve un número binario</h2></div>
+<section class="card">
+  <p>Último paso, y el más simple: a cada nivel de cuantización se le asigna un <b>código binario fijo</b>. Si hay 2<sup>n</sup> niveles, alcanza con n bits para numerarlos todos (con 8 niveles: el nivel 0 es <code>000</code>, el 1 es <code>001</code>, ... el 7 es <code>111</code>). La señal de voz queda convertida en una <b>ristra de bits</b> lista para transmitir o almacenar.</p>
+
+  <div class="definition">
+    <b>Codificación:</b> asignar a cada nivel cuantizado un código binario de n bits. La salida de PCM es la concatenación de los códigos de todas las muestras.
+  </div>
+
+  <h3>🔬 Probalo: mirá cómo cada muestra se vuelve bits</h3>
+  <p class="muted small">Con 3 bits (8 niveles) para que se vea fácil. Apretá ▶ para procesar muestra por muestra: se marca la muestra, su nivel y los bits que genera.</p>
+  <canvas id="cv-code" height="240"></canvas>
+  <div class="controls">
+    <button class="btn primary" id="btn-code-step">▶ Procesar siguiente muestra</button>
+    <button class="btn small" id="btn-code-reset">↺ Reiniciar</button>
+  </div>
+  <div id="code-table-wrap"></div>
+  <p class="small muted" style="margin-bottom:2px">Flujo de bits transmitido:</p>
+  <div class="bitstream" id="bitstream">—</div>
+</section>
+
+<!-- ============ PIPELINE COMPLETO ============ -->
+<div class="step-banner" id="completo"><div class="step-num">∑</div><h2>Todo junto: la calculadora de PCM</h2></div>
+<section class="card">
+  <p>La tasa de bits final de PCM sale de multiplicar las dos decisiones que tomaste:</p>
+  <div class="formula">Tasa de bits = f<sub>s</sub> × n &nbsp;&nbsp;[muestras/s × bits/muestra = bits/s]</div>
+
+  <h3>🔬 Probalo: armá tu propio sistema PCM</h3>
+  <canvas id="cv-full" height="230"></canvas>
+  <div class="controls">
+    <label class="ctl"><span id="lbl-f-fmax"></span><input type="range" id="sl-f-fmax" min="1000" max="20000" step="500" value="4000"></label>
+    <label class="ctl"><span id="lbl-f-bits"></span><input type="range" id="sl-f-bits" min="2" max="16" step="1" value="8"></label>
+  </div>
+  <div class="readouts">
+    <div class="ro" id="ro-f-fs"></div>
+    <div class="ro" id="ro-f-niveles"></div>
+    <div class="ro good" id="ro-f-rate"></div>
+  </div>
+  <div class="example" id="full-example"></div>
+
+  <div class="warning">
+    Más calidad cuesta capacidad: digitalizar exige <b>más ancho de banda</b> que mandar la voz analógica original (64 kbps vs. un canal de 4 kHz). Se paga ese precio porque la señal digital se regenera sin acumular ruido, se multiplexa fácil (24 canales DS0 forman un DS-1 de 1,544 Mbps) y se procesa digitalmente.
+  </div>
+
+  <p><b>Alternativa simple — Modulación delta:</b> en vez de codificar el valor completo de cada muestra, se transmite <b>1 solo bit</b> por muestra: <code>1</code> = la señal subió un escalón, <code>0</code> = bajó un escalón. Es más simple y barata, pero aproxima peor: si la señal cambia muy rápido, la escalera no la alcanza (<i>sobrecarga de pendiente</i>), y si la señal está quieta, la escalera oscila (<i>ruido granular</i>).</p>
+</section>
+
+<!-- ============ COMPANDING ============ -->
+<div class="step-banner" id="companding"><div class="step-num">+</div><h2>Companding — el truco para que la voz suene mejor</h2></div>
+<section class="card">
+  <p>La voz humana pasa la mayor parte del tiempo en <b>amplitudes bajas</b> (sonidos suaves) y muy poco en picos fuertes. Con cuantización uniforme, los escalones son iguales en todo el rango: se "gastan" niveles en amplitudes grandes que casi no se usan, mientras los susurros quedan mal resueltos.</p>
+
+  <div class="definition">
+    <b>Companding</b> (COMpresión + exPANsión): antes de cuantizar se <b>comprime</b> la señal con una curva logarítmica (amplifica lo débil, atenúa lo fuerte); en recepción se aplica la curva inversa (<b>expansión</b>). Resultado: más niveles efectivos donde la voz vive — las amplitudes pequeñas — sin aumentar la cantidad de bits.
+  </div>
+
+  <h3>🔬 Probalo: curva de compresión (ley μ)</h3>
+  <p class="muted small">Eje horizontal: amplitud de entrada. Eje vertical: amplitud comprimida que se cuantiza. Las franjas muestran qué porción de la señal de entrada captura cada nivel: con μ alto, los niveles se concentran en las amplitudes bajas.</p>
+  <canvas id="cv-comp" height="260"></canvas>
+  <div class="controls">
+    <label class="ctl"><span id="lbl-mu"></span><input type="range" id="sl-mu" min="0" max="255" step="1" value="100"></label>
+  </div>
+  <div class="example">
+    La telefonía usa <b>ley μ</b> (μ=255, EE.UU./Japón) o <b>ley A</b> (Europa/Argentina). Con 8 bits + companding se logra una calidad equivalente a ~12 bits uniformes.
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<div class="step-banner" id="quiz"><div class="step-num">?</div><h2>Mini quiz: ¿lo entendiste?</h2></div>
+<section class="card" id="quiz-box"></section>
+
+<footer>Guía interactiva de PCM · Comunicación de Datos · <a class="back" href="index.html">volver al test del Parcial 1</a></footer>
+</main>
+
+<script>
+/* ================= utilidades ================= */
+function $(s){ return document.querySelector(s); }
+function fitCanvas(cv){ cv.width = Math.max(320, cv.clientWidth || 900); }
+// señal "tipo voz": suma de armónicos, fmax relativa = 3
+function voice(t){ return 0.62*Math.sin(2*Math.PI*t) + 0.28*Math.sin(2*Math.PI*2*t + 1.2) + 0.18*Math.sin(2*Math.PI*3*t + 0.5); }
+const FMAX = 3; // frecuencia más alta relativa de voice()
+
+/* ================= 1. MUESTREO ================= */
+const cvS = $("#cv-sampling");
+let fsRatio = 2.4, sampAnim = -1, sampTimer = null;
+function drawSampling(){
+  fitCanvas(cvS);
+  const ctx = cvS.getContext("2d"), W = cvS.width, H = cvS.height, mid = H/2, amp = H/2 - 30;
+  ctx.clearRect(0,0,W,H);
+  // grilla
+  ctx.strokeStyle = "#16203a";
+  for(let x=0;x<W;x+=40){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  ctx.beginPath(); ctx.moveTo(0,mid); ctx.lineTo(W,mid); ctx.strokeStyle="#26314f"; ctx.stroke();
+  // señal original
+  ctx.strokeStyle = "#2ecc8f"; ctx.lineWidth = 2.2; ctx.beginPath();
+  for(let x=0;x<W;x++){ const t=x/W; const y=mid - voice(t)*amp; x?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+  ctx.stroke(); ctx.lineWidth = 1;
+  // muestras
+  const nSamp = Math.max(2, Math.round(fsRatio * FMAX * 2)); // muestras en la ventana (ventana = 2 periodos de fmax aprox)
+  const pts = [];
+  for(let i=0;i<=nSamp;i++){ const t=i/nSamp; pts.push([t*W, mid - voice(t)*amp, t]); }
+  // reconstrucción (interpolación suave entre muestras) — punteada naranja
+  ctx.strokeStyle = "#ffb84f"; ctx.setLineDash([5,5]); ctx.beginPath();
+  for(let x=0;x<W;x++){
+    const t=x/W; const pos=t*nSamp; const i=Math.min(nSamp-1, Math.floor(pos)); const frac=pos-i;
+    const y0=voice(pts[i][2]), y1=voice(pts[i+1] ? pts[i+1][2] : pts[i][2]);
+    const yv = y0 + (y1-y0)*(0.5-0.5*Math.cos(Math.PI*frac)); // coseno: suaviza
+    const y = mid - yv*amp;
+    x?ctx.lineTo(x,y):ctx.moveTo(x,y);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+  // puntos de muestra
+  pts.forEach((p,i)=>{
+    if(sampAnim >= 0 && i > sampAnim) return;
+    ctx.fillStyle = "#4f8cff";
+    ctx.beginPath(); ctx.arc(p[0], p[1], 4.5, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = "rgba(79,140,255,0.4)";
+    ctx.beginPath(); ctx.moveTo(p[0], mid); ctx.lineTo(p[0], p[1]); ctx.stroke();
+  });
+  ctx.fillStyle = "#94a3c0"; ctx.font = "12px sans-serif";
+  ctx.fillText("verde = señal original · azul = muestras · naranja punteada = señal reconstruida con esas muestras", 10, 16);
+  // readouts
+  $("#lbl-fs").innerHTML = "Frecuencia de muestreo f<sub>s</sub> = " + fsRatio.toFixed(1) + " × f<sub>max</sub>";
+  $("#ro-fs-real").innerHTML = "Para voz (f<sub>max</sub>=4 kHz): <b>" + Math.round(fsRatio*4000).toLocaleString("es-AR") + " muestras/s</b>";
+  const ok = fsRatio >= 2;
+  const ro = $("#ro-nyq");
+  ro.className = "ro " + (ok ? "good" : "alert");
+  ro.innerHTML = ok ? "✔ f<sub>s</sub> ≥ 2·f<sub>max</sub> → <b>se puede reconstruir</b>" : "✘ f<sub>s</sub> &lt; 2·f<sub>max</sub> → <b>ALIASING: señal falsa</b>";
+}
+$("#sl-fs").addEventListener("input", e=>{ fsRatio = parseFloat(e.target.value); sampAnim = -1; drawSampling(); });
+$("#btn-anim-samp").addEventListener("click", ()=>{
+  clearInterval(sampTimer); sampAnim = 0; drawSampling();
+  const total = Math.round(fsRatio * FMAX * 2) + 1;
+  sampTimer = setInterval(()=>{ sampAnim++; drawSampling(); if(sampAnim >= total){ clearInterval(sampTimer); sampAnim = -1; } }, 220);
+});
+
+/* ================= 2. CUANTIZACIÓN ================= */
+const cvQ = $("#cv-quant");
+let qBits = 3;
+function drawQuant(){
+  fitCanvas(cvQ);
+  const ctx = cvQ.getContext("2d"), W = cvQ.width, H = cvQ.height, mid = H/2, amp = H/2 - 32;
+  ctx.clearRect(0,0,W,H);
+  const levels = Math.pow(2,qBits);
+  const qz = v => (Math.round((v+1)/2*(levels-1))/(levels-1))*2-1;
+  // niveles
+  ctx.strokeStyle = "#222d4d"; ctx.setLineDash([2,6]);
+  for(let l=0;l<levels;l++){ const y = mid - (-1+2*l/(levels-1))*amp; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  ctx.setLineDash([]);
+  // área de error (entre señal y cuantizada)
+  ctx.fillStyle = "rgba(255,93,108,0.25)";
+  for(let x=0;x<W;x++){
+    const t=x/W, v=voice(t), q=qz(v);
+    const y1 = mid - v*amp, y2 = mid - q*amp;
+    ctx.fillRect(x, Math.min(y1,y2), 1, Math.abs(y2-y1));
+  }
+  // señal original
+  ctx.strokeStyle = "#2ecc8f"; ctx.lineWidth = 2; ctx.beginPath();
+  for(let x=0;x<W;x++){ const t=x/W, y=mid - voice(t)*amp; x?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+  ctx.stroke();
+  // señal cuantizada (continua para que se vea la escalera)
+  ctx.strokeStyle = "#4f8cff"; ctx.lineWidth = 2.2; ctx.beginPath();
+  for(let x=0;x<W;x++){ const t=x/W, y=mid - qz(voice(t))*amp; x?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+  ctx.stroke(); ctx.lineWidth = 1;
+  ctx.fillStyle = "#94a3c0"; ctx.font = "12px sans-serif";
+  ctx.fillText("verde = señal real · azul = señal cuantizada (escalera) · rojo = error de cuantización", 10, 16);
+  // error RMS aproximado
+  let acc=0, n=0;
+  for(let x=0;x<W;x+=3){ const t=x/W, e=voice(t)-qz(voice(t)); acc+=e*e; n++; }
+  const rms = Math.sqrt(acc/n);
+  $("#lbl-bits").textContent = "Bits por muestra n = " + qBits;
+  $("#ro-levels").innerHTML = "Niveles = 2<sup>"+qBits+"</sup> = <b>"+levels+"</b>";
+  $("#ro-snrq").innerHTML = "SNR de cuantización ≈ <b>"+(6.02*qBits+1.76).toFixed(1)+" dB</b>";
+  const roe = $("#ro-err");
+  roe.className = "ro " + (rms > 0.08 ? "alert" : "good");
+  roe.innerHTML = "Error RMS ≈ <b>"+(rms*100).toFixed(1)+" %</b> de la amplitud";
+}
+$("#sl-bits").addEventListener("input", e=>{ qBits = parseInt(e.target.value); drawQuant(); });
+
+/* ================= 3. CODIFICACIÓN ================= */
+const cvC = $("#cv-code");
+const CODE_BITS = 3, CODE_LEVELS = 8, N_SAMPLES = 10;
+let codeStep = 0;
+function codeSamples(){
+  const out = [];
+  for(let i=0;i<N_SAMPLES;i++){
+    const t = i/(N_SAMPLES-1);
+    const v = voice(t);
+    const lvl = Math.round((v+1)/2*(CODE_LEVELS-1));
+    out.push({ t, v, lvl, bin: lvl.toString(2).padStart(CODE_BITS,"0") });
+  }
+  return out;
+}
+const CSAMPLES = codeSamples();
+function drawCode(){
+  fitCanvas(cvC);
+  const ctx = cvC.getContext("2d"), W = cvC.width, H = cvC.height, mid = H/2 + 8, amp = H/2 - 42;
+  ctx.clearRect(0,0,W,H);
+  // niveles con su código binario a la izquierda
+  ctx.font = "11px Consolas, monospace";
+  for(let l=0;l<CODE_LEVELS;l++){
+    const y = mid - (-1+2*l/(CODE_LEVELS-1))*amp;
+    ctx.strokeStyle = "#222d4d"; ctx.setLineDash([2,6]);
+    ctx.beginPath(); ctx.moveTo(44,y); ctx.lineTo(W,y); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = "#2ecc8f";
+    ctx.fillText(l.toString(2).padStart(CODE_BITS,"0"), 6, y+4);
+  }
+  // señal
+  ctx.strokeStyle = "#2ecc8f"; ctx.lineWidth = 2; ctx.beginPath();
+  for(let x=44;x<W;x++){ const t=(x-44)/(W-44), y=mid - voice(t)*amp; x===44?ctx.moveTo(x,y):ctx.lineTo(x,y); }
+  ctx.stroke(); ctx.lineWidth = 1;
+  // muestras
+  CSAMPLES.forEach((s,i)=>{
+    const x = 44 + s.t*(W-44-6);
+    const ySig = mid - s.v*amp;
+    const yLvl = mid - (-1+2*s.lvl/(CODE_LEVELS-1))*amp;
+    const done = i < codeStep, current = i === codeStep-1;
+    ctx.strokeStyle = done ? "rgba(79,140,255,0.5)" : "#26314f";
+    ctx.beginPath(); ctx.moveTo(x, mid); ctx.lineTo(x, ySig); ctx.stroke();
+    ctx.fillStyle = done ? (current ? "#ffb84f" : "#4f8cff") : "#39456e";
+    ctx.beginPath(); ctx.arc(x, ySig, current?6:4.5, 0, Math.PI*2); ctx.fill();
+    if(done){
+      // flecha de redondeo al nivel
+      ctx.strokeStyle = current ? "#ffb84f" : "rgba(79,140,255,0.65)";
+      ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(x,ySig); ctx.lineTo(x,yLvl); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = current ? "#ffb84f" : "#9dbcff";
+      ctx.font = "bold 11px Consolas, monospace";
+      ctx.fillText(s.bin, x-11, yLvl - 7);
+    }
+  });
+  ctx.fillStyle = "#94a3c0"; ctx.font = "12px sans-serif";
+  ctx.fillText("cada nivel tiene su código binario (izquierda) · cada muestra se redondea y toma el código de su nivel", 50, 14);
+}
+function renderCodeTable(){
+  const rows = CSAMPLES.slice(0, codeStep).map((s,i)=>
+    "<tr><td>"+(i+1)+"</td><td>"+s.v.toFixed(3)+"</td><td>"+s.lvl+"</td><td class='bin'>"+s.bin+"</td></tr>").join("");
+  $("#code-table-wrap").innerHTML = codeStep === 0 ? "" :
+    "<table class='codes'><tr><th>Muestra #</th><th>Valor medido</th><th>Nivel elegido (0–7)</th><th>Bits transmitidos</th></tr>"+rows+"</table>";
+  const bits = CSAMPLES.slice(0, codeStep).map((s,i)=>
+    (i===codeStep-1 ? "<span class='current'>"+s.bin+"</span>" : s.bin)).join(" ");
+  $("#bitstream").innerHTML = bits || "—";
+  $("#btn-code-step").disabled = codeStep >= N_SAMPLES;
+  $("#btn-code-step").textContent = codeStep >= N_SAMPLES ? "✔ Las 10 muestras procesadas" : "▶ Procesar siguiente muestra";
+}
+$("#btn-code-step").addEventListener("click", ()=>{ if(codeStep<N_SAMPLES){ codeStep++; drawCode(); renderCodeTable(); } });
+$("#btn-code-reset").addEventListener("click", ()=>{ codeStep=0; drawCode(); renderCodeTable(); });
+
+/* ================= PIPELINE COMPLETO ================= */
+const cvF = $("#cv-full");
+let fFmax = 4000, fBits = 8;
+function fmtBps(b){
+  if(b>=1e6) return (b/1e6).toLocaleString("es-AR",{maximumFractionDigits:2})+" Mbps";
+  if(b>=1e3) return (b/1e3).toLocaleString("es-AR",{maximumFractionDigits:1})+" kbps";
+  return b+" bps";
+}
+function drawFull(){
+  fitCanvas(cvF);
+  const ctx = cvF.getContext("2d"), W = cvF.width, H = cvF.height, mid = H/2 + 6, amp = H/2 - 36;
+  ctx.clearRect(0,0,W,H);
+  const levels = Math.min(64, Math.pow(2,fBits)); // tope visual
+  const qz = v => (Math.round((v+1)/2*(levels-1))/(levels-1))*2-1;
+  // señal y escalera
+  ctx.strokeStyle = "#2ecc8f"; ctx.lineWidth = 1.8; ctx.beginPath();
+  for(let x=0;x<W;x++){ const t=x/W, y=mid - voice(t)*amp; x?ctx.lineTo(x,y):ctx.moveTo(x,y); }
+  ctx.stroke();
+  const nS = 26;
+  ctx.strokeStyle = "#4f8cff"; ctx.lineWidth = 2.2; ctx.beginPath();
+  let prevY = null;
+  for(let i=0;i<=nS;i++){
+    const t=i/nS, x=t*W, y = mid - qz(voice(t))*amp;
+    if(prevY===null) ctx.moveTo(x,y); else { ctx.lineTo(x,prevY); ctx.lineTo(x,y); }
+    prevY = y;
+  }
+  ctx.lineTo(W,prevY); ctx.stroke(); ctx.lineWidth = 1;
+  ctx.fillStyle = "#94a3c0"; ctx.font = "12px sans-serif";
+  ctx.fillText("vista esquemática: señal (verde) y su versión PCM (azul). Los números de abajo son los que importan:", 10, 16);
+  const fs = 2*fFmax;
+  $("#lbl-f-fmax").innerHTML = "f<sub>max</sub> de la señal = " + (fFmax/1000).toLocaleString("es-AR") + " kHz";
+  $("#lbl-f-bits").textContent = "Bits por muestra n = " + fBits;
+  $("#ro-f-fs").innerHTML = "f<sub>s</sub> = 2·f<sub>max</sub> = <b>" + fs.toLocaleString("es-AR") + " muestras/s</b>";
+  $("#ro-f-niveles").innerHTML = "Niveles = 2<sup>"+fBits+"</sup> = <b>" + Math.pow(2,fBits).toLocaleString("es-AR") + "</b>";
+  $("#ro-f-rate").innerHTML = "Tasa = f<sub>s</sub> × n = <b>" + fmtBps(fs*fBits) + "</b>";
+  // ejemplo dinámico
+  let ex;
+  if(fFmax===4000 && fBits===8) ex = "🎯 ¡Este es el PCM telefónico! 8000 muestras/s × 8 bits = <b>64 kbps</b>: el canal <b>DS0</b>. 24 de estos canales multiplexados por TDM forman un DS-1 (T1) de 1,544 Mbps.";
+  else if(fFmax>=18000 && fBits>=16) ex = "🎵 Esto se parece al <b>CD de audio</b>: ~20 kHz y 16 bits por muestra (el CD real usa fs=44.100 → 705,6 kbps por canal, ×2 por estéreo).";
+  else ex = "Comparalo con el estándar telefónico: f<sub>max</sub>=4 kHz y n=8 → 64 kbps (DS0). Subí f<sub>max</sub> y n para acercarte a calidad CD.";
+  $("#full-example").innerHTML = ex;
+}
+$("#sl-f-fmax").addEventListener("input", e=>{ fFmax = parseInt(e.target.value); drawFull(); });
+$("#sl-f-bits").addEventListener("input", e=>{ fBits = parseInt(e.target.value); drawFull(); });
+
+/* ================= COMPANDING ================= */
+const cvM = $("#cv-comp");
+let mu = 100;
+function muLaw(x, mu){ return mu===0 ? x : Math.sign(x)*Math.log(1+mu*Math.abs(x))/Math.log(1+mu); }
+function drawComp(){
+  fitCanvas(cvM);
+  const ctx = cvM.getContext("2d"), W = cvM.width, H = cvM.height;
+  ctx.clearRect(0,0,W,H);
+  const pad = 46, w = W-pad-14, h = H-50;
+  // franjas: 8 niveles uniformes en el eje comprimido → qué rango de entrada captura cada uno
+  const NL = 8;
+  for(let l=0;l<NL;l++){
+    // límites del nivel en eje de salida [l/NL,(l+1)/NL] → invertir μ-law para hallar entradas
+    const inv = y => mu===0 ? y : (Math.pow(1+mu, y)-1)/mu;
+    const x0 = inv(l/NL), x1 = inv((l+1)/NL);
+    ctx.fillStyle = l%2 ? "rgba(79,140,255,0.10)" : "rgba(124,92,255,0.10)";
+    ctx.fillRect(pad + x0*w, 28, (x1-x0)*w, h);
+  }
+  // ejes
+  ctx.strokeStyle = "#39456e";
+  ctx.beginPath(); ctx.moveTo(pad, 28); ctx.lineTo(pad, 28+h); ctx.lineTo(pad+w, 28+h); ctx.stroke();
+  // identidad (sin companding)
+  ctx.strokeStyle = "#39456e"; ctx.setLineDash([4,5]); ctx.beginPath();
+  ctx.moveTo(pad, 28+h); ctx.lineTo(pad+w, 28); ctx.stroke(); ctx.setLineDash([]);
+  // curva μ-law
+  ctx.strokeStyle = "#ffb84f"; ctx.lineWidth = 2.4; ctx.beginPath();
+  for(let i=0;i<=200;i++){
+    const x = i/200, y = muLaw(x, mu);
+    const px = pad + x*w, py = 28 + h - y*h;
+    i?ctx.lineTo(px,py):ctx.moveTo(px,py);
+  }
+  ctx.stroke(); ctx.lineWidth = 1;
+  ctx.fillStyle = "#94a3c0"; ctx.font = "12px sans-serif";
+  ctx.fillText("entrada (amplitud de la voz) →", pad + w/2 - 80, H-6);
+  ctx.save(); ctx.translate(12, 28 + h/2 + 60); ctx.rotate(-Math.PI/2);
+  ctx.fillText("salida comprimida (lo que se cuantiza) →", 0, 0); ctx.restore();
+  ctx.fillStyle = "#ffb84f"; ctx.fillText("curva de compresión (μ = "+mu+")", pad+10, 24);
+  ctx.fillStyle = "#7986b3"; ctx.fillText("punteada = sin companding", pad + w - 170, 24);
+  $("#lbl-mu").textContent = "Parámetro μ = " + mu + (mu===0 ? " (sin companding)" : "");
+}
+$("#sl-mu").addEventListener("input", e=>{ mu = parseInt(e.target.value); drawComp(); });
+
+/* ================= QUIZ ================= */
+const QUIZ = [
+  {
+    q: "1. Para digitalizar música cuya frecuencia máxima es de 10 kHz, ¿a cuánto hay que muestrear como mínimo?",
+    opts: ["10.000 muestras/s", "20.000 muestras/s", "5.000 muestras/s", "80.000 muestras/s"],
+    ok: 1,
+    fb: "Teorema de muestreo: fs ≥ 2·fmax = 2 × 10.000 = 20.000 muestras/s. Por debajo aparece aliasing."
+  },
+  {
+    q: "2. Un sistema PCM usa 6 bits por muestra. ¿Cuántos niveles de cuantización tiene y qué pasa si paso a 7 bits?",
+    opts: ["12 niveles; con 7 bits, 14 niveles", "64 niveles; con 7 bits se duplican a 128 y baja el ruido de cuantización", "36 niveles; con 7 bits, 49 niveles", "64 niveles; con 7 bits el ruido de cuantización aumenta"],
+    ok: 1,
+    fb: "Niveles = 2^n: 2^6 = 64; cada bit extra DUPLICA los niveles (128) y reduce el ruido de cuantización ≈6 dB — a cambio de más tasa de bits."
+  },
+  {
+    q: "3. ¿De dónde salen los 64 kbps del canal telefónico DS0?",
+    opts: ["4000 Hz × 16 bits de cada trama", "8000 muestras/s × 8 bits por muestra", "64.000 niveles de cuantización por segundo", "Es un número fijado por norma sin relación con el muestreo"],
+    ok: 1,
+    fb: "Voz limitada a 4 kHz → fs = 8000 muestras/s (Nyquist); con 8 bits por muestra: 8000 × 8 = 64.000 bps."
+  },
+  {
+    q: "4. ¿Qué problema ataca el companding?",
+    opts: ["El aliasing por muestrear demasiado lento", "Que los niveles uniformes resuelven mal las amplitudes bajas, donde vive la voz", "La pérdida de sincronización por largas cadenas de ceros", "La atenuación de la señal en cables largos"],
+    ok: 1,
+    fb: "Con cuantización uniforme, los sonidos suaves (la mayoría en la voz) quedan mal resueltos. El companding comprime antes de cuantizar: más niveles efectivos en amplitudes bajas, sin agregar bits."
+  }
+];
+(function renderQuiz(){
+  const box = $("#quiz-box");
+  QUIZ.forEach((item, qi)=>{
+    const p = document.createElement("p"); p.innerHTML = "<b>"+item.q+"</b>"; box.appendChild(p);
+    const fb = document.createElement("div"); fb.className = "quiz-fb";
+    item.opts.forEach((o, oi)=>{
+      const lbl = document.createElement("label");
+      lbl.className = "quiz-opt"; lbl.textContent = o;
+      lbl.addEventListener("click", ()=>{
+        if(fb.classList.contains("show")) return;
+        const opts = box.querySelectorAll(".quiz-opt");
+        const base = qi*4;
+        opts[base+item.ok].classList.add("ok");
+        if(oi !== item.ok) lbl.classList.add("bad");
+        fb.className = "quiz-fb show " + (oi===item.ok ? "ok" : "bad");
+        fb.innerHTML = (oi===item.ok ? "✔ ¡Correcto! " : "✘ No. ") + item.fb;
+      });
+      box.appendChild(lbl);
+    });
+    box.appendChild(fb);
+  });
+})();
+
+/* ================= init / resize ================= */
+function drawAll(){ drawSampling(); drawQuant(); drawCode(); renderCodeTable(); drawFull(); drawComp(); }
+window.addEventListener("resize", drawAll);
+setTimeout(drawAll, 60);
+</script>
+</body>
+</html>
