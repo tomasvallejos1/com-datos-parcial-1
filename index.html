@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Com. de Datos — Parcial 1 · Test interactivo</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <h1>📡 Comunicación de Datos — Parcial 1</h1>
+    <nav>
+      <button id="nav-home" class="nav-btn active">Inicio</button>
+      <button id="nav-mc" class="nav-btn">Multiple Choice <span class="pill" id="mc-progress-pill">0/60</span></button>
+      <button id="nav-dev" class="nav-btn">Desarrollo <span class="pill" id="dev-progress-pill">0/20</span></button>
+      <button id="nav-results" class="nav-btn">Resultados</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <!-- HOME -->
+  <section id="view-home" class="view active">
+    <div class="card hero">
+      <h2>Autoevaluación U1 · U2 · U3</h2>
+      <p>Basado en el resumen completo de la materia (Stallings, 10ª ed. + PowerPoints UTN FRVT).</p>
+      <div class="hero-grid">
+        <div class="hero-item">
+          <h3>🎯 60 Multiple Choice</h3>
+          <ul>
+            <li>40 de nivel <b>medio</b> · 20 de nivel <b>difícil</b></li>
+            <li>20 son de <b>selección múltiple</b> (1, 2 o 3 correctas)</li>
+            <li>Corrección inmediata con explicación</li>
+            <li>Gráficos y simuladores interactivos en las explicaciones</li>
+          </ul>
+          <button class="btn primary" id="btn-start-mc">Empezar Multiple Choice</button>
+        </div>
+        <div class="hero-item">
+          <h3>✍️ 20 de Desarrollo</h3>
+          <ul>
+            <li>Escribís tu respuesta libre</li>
+            <li>La máquina la corrige automáticamente por conceptos clave</li>
+            <li>Te dice si está bien, parcial o mal</li>
+            <li>Te muestra la respuesta modelo completa</li>
+          </ul>
+          <button class="btn primary" id="btn-start-dev">Empezar Desarrollo</button>
+        </div>
+      </div>
+      <div class="hero-units">
+        <span class="unit-chip u1">U1 · Redes, Internet, TCP/IP y OSI</span>
+        <span class="unit-chip u2">U2 · Transmisión, dB, SNR, Nyquist y Shannon</span>
+        <span class="unit-chip u3">U3 · Medios, cableado, codificación y multiplexación</span>
+      </div>
+      <p class="muted small">Tu progreso se guarda automáticamente en este navegador. <button class="btn danger small" id="btn-reset">Reiniciar todo</button></p>
+    </div>
+  </section>
+
+  <!-- MULTIPLE CHOICE -->
+  <section id="view-mc" class="view">
+    <div class="quiz-layout">
+      <aside class="qmap card" id="mc-map"></aside>
+      <div class="qpanel">
+        <div class="card" id="mc-question-card"></div>
+        <div class="qnav">
+          <button class="btn" id="mc-prev">← Anterior</button>
+          <span id="mc-counter" class="muted"></span>
+          <button class="btn" id="mc-next">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESARROLLO -->
+  <section id="view-dev" class="view">
+    <div class="quiz-layout">
+      <aside class="qmap card" id="dev-map"></aside>
+      <div class="qpanel">
+        <div class="card" id="dev-question-card"></div>
+        <div class="qnav">
+          <button class="btn" id="dev-prev">← Anterior</button>
+          <span id="dev-counter" class="muted"></span>
+          <button class="btn" id="dev-next">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTADOS -->
+  <section id="view-results" class="view">
+    <div id="results-content"></div>
+  </section>
+</main>
+
+<footer class="footer muted small">
+  Hecho para estudiar Comunicación de Datos · UTN FRVT · Unidades 1, 2 y 3
+</footer>
+
+<script src="js/questions.js"></script>
+<script src="js/dev-questions.js"></script>
+<script src="js/widgets.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
