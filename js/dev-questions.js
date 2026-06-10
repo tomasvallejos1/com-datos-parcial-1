@@ -13,7 +13,7 @@ const DEV_QUESTIONS = [
 
 {
   id: 1, unit: 1,
-  q: "Explicá el modelo general de comunicación de datos (elementos y función de cada uno) y aplicalo al ejemplo de abrir una página web.",
+  q: "Describí el modelo general de comunicación de datos: identificá cada elemento, explicá qué función cumple y qué sucede si falla alguno. Aplicalo al ejemplo de abrir una página web.",
   concepts: [
     { label: "Fuente (genera la información)", keys: ["fuente"] },
     { label: "Transmisor (convierte datos en señal)", keys: ["transmisor"] },
@@ -21,9 +21,10 @@ const DEV_QUESTIONS = [
     { label: "Receptor (reconstruye los datos)", keys: ["receptor"] },
     { label: "Destino (interpreta la información)", keys: ["destino"] },
     { label: "Ejemplo web: HTTP / navegador / servidor", keys: ["http", "navegador", "servidor", "pagina web", "web"] },
-    { label: "Rol de capas/protocolos (TCP, IP, Ethernet/Wi-Fi)", keys: ["tcp", "capa", "ip ", "ethernet", "wifi", "wi-fi", "protocolo"] }
+    { label: "Rol de capas/protocolos (TCP, IP, Ethernet/Wi-Fi)", keys: ["tcp", "capa", "ip ", "ethernet", "wifi", "wi-fi", "protocolo"] },
+    { label: "Qué pasa si falla un elemento (no llega / se degrada m')", keys: ["falla", "falle", "se corta", "no llega", "se pierde", "degrada"] }
   ],
-  model: "El modelo es: Fuente → Transmisor → Sistema de transmisión → Receptor → Destino.\n\n• FUENTE: genera la información (una computadora, un sensor, una persona escribiendo).\n• TRANSMISOR: transforma los datos en una señal adecuada al medio (placa de red, módem, antena Wi-Fi, láser de fibra).\n• SISTEMA DE TRANSMISIÓN: el camino físico (par trenzado, coaxial, fibra, radio, satélite).\n• RECEPTOR: toma la señal recibida (atenuada, distorsionada y con ruido) y reconstruye los datos.\n• DESTINO: interpreta la información (aplicación, usuario, servidor).\n\nAplicado a la web: el navegador (fuente) genera una solicitud HTTP/HTTPS; TCP divide y transporta los datos; IP direcciona los paquetes; la capa de acceso los encapsula en tramas Ethernet o Wi-Fi; la capa física los convierte en señales eléctricas, ópticas o de radio (transmisor + medio); los routers reenvían los paquetes; el servidor (destino) responde y el proceso inverso reconstruye la página en el navegador. En la práctica se busca que m' ≈ m: que la información llegue igual o suficientemente aproximada."
+  model: "El modelo es: Fuente → Transmisor → Sistema de transmisión → Receptor → Destino.\n\n• FUENTE: genera la información (una computadora, un sensor, una persona escribiendo).\n• TRANSMISOR: transforma los datos en una señal adecuada al medio (placa de red, módem, antena Wi-Fi, láser de fibra).\n• SISTEMA DE TRANSMISIÓN: el camino físico (par trenzado, coaxial, fibra, radio, satélite).\n• RECEPTOR: toma la señal recibida (atenuada, distorsionada y con ruido) y reconstruye los datos.\n• DESTINO: interpreta la información (aplicación, usuario, servidor).\n\n¿QUÉ PASA SI FALLA UN ELEMENTO? La comunicación se corta o degrada según cuál falle: si falla la fuente no hay información que enviar; si falla el transmisor los datos no se convierten en señal (no sale nada al medio); si falla el sistema de transmisión (corte de cable, interferencia fuerte) la señal no llega o llega tan degradada que el receptor no la puede interpretar; si falla el receptor la señal llega pero no se reconstruyen los datos; si falla el destino los datos llegan pero nadie los interpreta. La meta es que m' ≈ m: si algún elemento degrada demasiado la señal, los bits llegan con errores y m' ≠ m.\n\nAplicado a la web: el navegador (fuente) genera una solicitud HTTP/HTTPS; TCP divide y transporta los datos; IP direcciona los paquetes; la capa de acceso los encapsula en tramas Ethernet o Wi-Fi; la capa física los convierte en señales eléctricas, ópticas o de radio (transmisor + medio); los routers reenvían los paquetes; el servidor (destino) responde y el proceso inverso reconstruye la página en el navegador."
 },
 {
   id: 2, unit: 1,
@@ -141,18 +142,18 @@ const DEV_QUESTIONS = [
 },
 {
   id: 10, unit: 2,
-  q: "Desarrollá los teoremas de Nyquist y Shannon: fórmula de cada uno, qué tipo de canal asume cada uno, qué responde cada uno y cómo se usan en conjunto.",
+  q: "EJERCICIO (estilo campus): un canal telefónico tiene B = 4000 Hz y SNR = 20 dB. Calculá la capacidad máxima según Shannon. Luego determiná el valor de M en la fórmula de Nyquist que más se aproxima a ese límite sin superarlo, y justificá por qué no puede usarse el valor de M inmediato superior. Incluí las fórmulas y qué canal asume cada teorema.",
   concepts: [
-    { label: "Nyquist: C = 2B·log₂(M)", keys: ["2b", "log2(m)", "log₂(m)", "2 b"] },
-    { label: "Nyquist asume canal ideal SIN ruido", keys: ["sin ruido", "ideal"] },
-    { label: "M = niveles de señal / bits por símbolo", keys: ["niveles", "simbolo"] },
-    { label: "Shannon: C = B·log₂(1+SNR)", keys: ["1+snr", "1 + snr", "log2(1", "log₂(1"] },
-    { label: "Shannon asume canal real CON ruido (SNR lineal)", keys: ["con ruido", "real", "snr"] },
-    { label: "Shannon es el techo/límite teórico", keys: ["techo", "limite", "maximo teorico"] },
-    { label: "No se puede aumentar M indefinidamente por el ruido", keys: ["indefinidamente", "confunde", "juntos", "no se puede aumentar"] },
-    { label: "Uso conjunto: Shannon da el techo, Nyquist estima M necesario", keys: ["conjunto", "estimar", "acercarse", "cuantos niveles"] }
+    { label: "Shannon: C = B·log₂(1+SNR), canal real con ruido", keys: ["1+snr", "1 + snr", "log2(1", "log₂(1"] },
+    { label: "Conversión a lineal: SNR 20 dB = 100", keys: ["100", "10^(20/10)", "10^2"] },
+    { label: "C ≈ 26.600 bps (4000·log₂(101) ≈ 4000·6,66)", keys: ["26600", "26.600", "26,6", "26.6", "6 66", "6,66", "101"] },
+    { label: "Nyquist: C = 2B·log₂(M), canal ideal sin ruido", keys: ["2b", "2 b", "log2(m)", "log₂(m)", "sin ruido", "ideal"] },
+    { label: "M = 8 da 24.000 bps, por debajo del límite", keys: ["m 8", "m=8", "8 niveles", "24000", "24.000", "24 kbps"] },
+    { label: "M = 16 daría 32.000 bps y SUPERA a Shannon", keys: ["m 16", "m=16", "16 niveles", "32000", "32.000", "32 kbps", "supera"] },
+    { label: "Con ese ruido los 16 niveles no se distinguen de forma confiable", keys: ["confunde", "no confiable", "no seria confiable", "juntos", "errores", "no se distinguen"] },
+    { label: "Shannon es el techo; Nyquist estima los niveles necesarios", keys: ["techo", "limite", "maximo teorico"] }
   ],
-  model: "NYQUIST (canal IDEAL, sin ruido): C = 2B·log₂(M), donde B es el ancho de banda en Hz y M la cantidad de niveles de señal (log₂(M) = bits por símbolo). Dice que la tasa máxima de símbolos sin interferencia es 2B, y que con más niveles por símbolo se transportan más bits. Ej.: B = 3 kHz, M = 2 → C = 6000 bps; con M = 16 → 24.000 bps. Limitación: no considera ruido — en la realidad no se puede aumentar M indefinidamente porque los niveles quedan tan juntos que el ruido los confunde.\n\nSHANNON-HARTLEY (canal REAL, con ruido): C = B·log₂(1+SNR), con SNR en escala LINEAL (SNRlineal = 10^(SNRdB/10)). Da el TECHO teórico absoluto: ninguna técnica puede superarlo con errores arbitrariamente pequeños. Aumentar B sube la capacidad casi linealmente; aumentar SNR la sube logarítmicamente. Ej.: B = 3100 Hz, SNR = 30 dB (=1000) → C ≈ 31 kbps.\n\nUSO CONJUNTO: Shannon indica el límite realista del canal; Nyquist ayuda a estimar cuántos niveles/símbolos harían falta para acercarse a ese techo (en el ejemplo, M ≈ 32). La modulación real se elige según SNR, BER, ancho de banda y complejidad."
+  model: "PASO 1 — Shannon (canal REAL con ruido): C = B·log₂(1+SNR), con el SNR en escala LINEAL.\nConversión: SNRlineal = 10^(20/10) = 100.\nC = 4000 · log₂(1+100) = 4000 · log₂(101) ≈ 4000 · 6,66 ≈ 26.600 bps ≈ 26,6 kbps.\nEse es el TECHO teórico del canal: ninguna técnica puede superarlo con tasa de error arbitrariamente pequeña.\n\nPASO 2 — Nyquist (canal IDEAL sin ruido): C = 2B·log₂(M) = 8000·log₂(M).\n• Con M = 8: C = 8000 · 3 = 24.000 bps → queda POR DEBAJO de los 26,6 kbps de Shannon ✔. Es el M que más se aproxima sin superarlo.\n• Con M = 16: C = 8000 · 4 = 32.000 bps → SUPERA el techo de Shannon ✘.\n\nJUSTIFICACIÓN: Nyquist no considera el ruido, así que 'promete' cualquier capacidad con tal de subir M. Pero con SNR = 20 dB los 16 niveles quedarían tan juntos que el ruido los confundiría: el receptor no podría distinguirlos de forma confiable y la tasa de error se dispararía. Shannon demuestra que con ese ruido es IMPOSIBLE transmitir a 32 kbps de manera confiable; por eso se elige el M cuyo Nyquist quede por debajo del límite de Shannon.\n\nRESUMEN del uso conjunto: Shannon fija el techo realista del canal; Nyquist ayuda a estimar cuántos niveles/símbolos usar para acercarse a ese techo sin superarlo."
 },
 {
   id: 11, unit: 2,
@@ -214,18 +215,20 @@ const DEV_QUESTIONS = [
 },
 {
   id: 15, unit: 3,
-  q: "¿Qué es el cableado estructurado y qué busca? Nombrá sus elementos (espacios, pasivos, activos, distribuidores) y las normas principales que lo rigen.",
+  q: "Describí el proceso completo de PCM para digitalizar una señal de voz de 4 kHz usando 8 bits por muestra. Calculá la tasa de bits resultante y explicá el compromiso entre número de niveles de cuantización y calidad de la señal reconstruida.",
   concepts: [
-    { label: "Infraestructura organizada/jerárquica/estandarizada", keys: ["organizada", "jerarquica", "estandarizada", "estructurado"] },
-    { label: "Objetivos: flexibilidad, escalabilidad, mantenimiento, documentación", keys: ["flexibilidad", "escalab", "mantenimiento", "documentacion", "crecimiento"] },
-    { label: "Espacios: acometida, cuarto de telecomunicaciones/equipos, áreas de trabajo", keys: ["acometida", "cuarto", "area de trabajo", "areas de trabajo"] },
-    { label: "Pasivos: cables, rosetas/TO, patch panels, racks, canalizaciones", keys: ["patch panel", "roseta", "rack", "canalizacion", "pasivo"] },
-    { label: "Activos: switches, routers, APs, firewalls", keys: ["switch", "router", "access point", "firewall", "activo"] },
-    { label: "Distribuidores CD/BD/FD (campus/edificio/piso)", keys: ["campus distributor", "building", "floor", "distribuidor", "cd", "bd", "fd"] },
-    { label: "Normas: TIA-568/569/606/607/942", keys: ["568", "569", "606", "607", "942", "tia"] },
-    { label: "ISO/IEC 11801 (e IRAM en Argentina); IEEE 802.3", keys: ["11801", "iso", "iram", "802.3", "ieee"] }
+    { label: "Etapa 1: muestreo de la señal analógica", keys: ["muestreo", "muestrear", "muestras"] },
+    { label: "Teorema de muestreo: fs ≥ 2·fmax", keys: ["2 fmax", "2fmax", "doble de la frecuencia", "nyquist", "fs"] },
+    { label: "fs = 8000 muestras por segundo", keys: ["8000", "8 khz", "8khz"] },
+    { label: "Etapa 2: cuantización a niveles discretos", keys: ["cuantizacion", "cuantizar", "niveles discretos", "aproxima a un nivel"] },
+    { label: "8 bits → 256 niveles", keys: ["256"] },
+    { label: "Etapa 3: codificación binaria de cada nivel", keys: ["codificacion", "codigo binario", "asigna un codigo"] },
+    { label: "Tasa resultante: 8000 × 8 = 64 kbps", keys: ["64 kbps", "64000", "64.000", "64 kb"] },
+    { label: "Ruido/error de cuantización por el redondeo", keys: ["ruido de cuantizacion", "error de cuantizacion", "redondeo", "redondea"] },
+    { label: "Compromiso: más bits = mejor calidad pero más tasa de bits", keys: ["mas bits", "mas niveles", "compromiso", "mejor calidad", "mayor tasa"] },
+    { label: "Companding: más niveles efectivos en amplitudes bajas", keys: ["companding", "compresion y expansion", "amplitudes bajas", "amplitudes pequenas"] }
   ],
-  model: "El CABLEADO ESTRUCTURADO es una infraestructura organizada, jerárquica y ESTANDARIZADA para transportar voz, datos y video en edificios o campus. Busca evitar instalaciones improvisadas y lograr flexibilidad, escalabilidad, mantenimiento, documentación, crecimiento ordenado e interoperabilidad.\n\nELEMENTOS:\n• Espacios: acometida de red, cuarto de telecomunicaciones, cuarto de equipamiento, áreas de trabajo.\n• Pasivos: cables, rosetas/TO (Telecommunications Outlets), patch panels, racks, bandejas, canalizaciones, conectores.\n• Activos: switches, routers, access points, firewalls, servidores, conversores de medio.\n• Distribuidores: CD (Campus Distributor), BD (Building Distributor), FD (Floor Distributor).\n\nNORMAS: ISO/IEC 11801 (cableado genérico internacional; IRAM-ISO/IEC 11801 en Argentina); ANSI/TIA-568 (cableado en edificios comerciales: requisitos, par trenzado, fibra, coaxial); TIA-569 (espacios y recorridos); TIA-606 (administración, etiquetado y documentación); TIA-607 (puesta a tierra y equipotencialidad); TIA-942 (datacenters); EN 50173/50174/50310 (Europa); IEEE 802.3 (Ethernet: 100BASE-TX, 1000BASE-T, 10GBASE-T...). También T568A/T568B: esquemas de terminación del conector 8P8C/RJ-45 (misma norma ambos extremos = cable directo; distinta = cruzado)."
+  model: "PCM (Pulse Code Modulation) digitaliza una señal analógica en TRES etapas:\n\n1) MUESTREO: se toman muestras periódicas de la señal. Por el teorema de muestreo, fs ≥ 2·fmax para poder reconstruirla sin pérdida. Con voz limitada a 4 kHz: fs = 2 × 4000 = 8000 muestras/s. Si se muestreara por debajo, aparecería ALIASING y la señal no podría reconstruirse.\n\n2) CUANTIZACIÓN: cada muestra (de amplitud continua) se aproxima al nivel discreto más cercano. Con 8 bits por muestra hay 2⁸ = 256 niveles disponibles. Este redondeo introduce un error inevitable: el RUIDO DE CUANTIZACIÓN.\n\n3) CODIFICACIÓN: a cada nivel se le asigna un código binario de 8 bits, que es lo que se transmite.\n\nTASA RESULTANTE: 8000 muestras/s × 8 bits/muestra = 64.000 bps = 64 kbps (el clásico canal DS0 de telefonía digital).\n\nCOMPROMISO niveles vs. calidad: con MÁS bits por muestra hay más niveles, los escalones son más chicos y el ruido de cuantización baja (mejor calidad reconstruida), pero la tasa de bits crece proporcionalmente (4 bits → 16 niveles → 32 kbps; 8 bits → 256 niveles → 64 kbps; 16 bits → 65.536 niveles → 128 kbps). Con MENOS bits se ahorra capacidad pero la señal reconstruida suena distorsionada.\n\nMejora práctica: el COMPANDING (compresión + expansión) asigna más niveles efectivos a las amplitudes pequeñas —donde se concentra la voz humana— mejorando la calidad percibida sin aumentar la tasa de bits."
 },
 {
   id: 16, unit: 3,

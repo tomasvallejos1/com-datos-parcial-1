@@ -3,7 +3,7 @@
    de desarrollo por conceptos, resultados y persistencia local.
    ===================================================================== */
 
-const STORAGE_KEY = "comdatos-parcial1-v1";
+const STORAGE_KEY = "comdatos-parcial1-v2";
 
 const state = {
   mc: {},   // id -> { selected: [..], graded: bool, correct: bool }
@@ -57,9 +57,21 @@ function show(view) {
 /* =====================================================================
    MULTIPLE CHOICE
    ===================================================================== */
+function shuffledOrder(n) {
+  const a = [...Array(n).keys()];
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function mcState(q) {
   if (!state.mc[q.id]) state.mc[q.id] = { selected: [], graded: false, correct: false };
-  return state.mc[q.id];
+  const s = state.mc[q.id];
+  // orden aleatorio de opciones, persistido para que no cambie entre renders
+  if (!s.order || s.order.length !== q.options.length) s.order = shuffledOrder(q.options.length);
+  return s;
 }
 
 function renderMCMap() {
@@ -97,7 +109,10 @@ function renderMC() {
   card.appendChild(el("div", "qtext", `<b>${state.mcIndex + 1}.</b> ${q.q}`));
 
   const opts = el("div", "options");
-  q.options.forEach((optText, idx) => {
+  // las opciones se muestran en el orden aleatorio s.order;
+  // "idx" siempre es el índice ORIGINAL (el que usa q.correct)
+  s.order.forEach(idx => {
+    const optText = q.options[idx];
     const opt = el("label", "option");
     const input = document.createElement("input");
     input.type = q.multi ? "checkbox" : "radio";
@@ -111,8 +126,8 @@ function renderMC() {
         s.selected = [idx];
       }
       saveState();
-      opts.querySelectorAll(".option").forEach((o, i2) => {
-        o.classList.toggle("selected", s.selected.includes(i2));
+      opts.querySelectorAll(".option").forEach((o, pos) => {
+        o.classList.toggle("selected", s.selected.includes(s.order[pos]));
       });
     });
     opt.appendChild(input);

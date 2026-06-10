@@ -6,7 +6,9 @@ Web de autoevaluación para el **primer parcial de Comunicación de Datos** (UTN
 
 ### 🎯 60 preguntas Multiple Choice
 - **40 de nivel medio** y **20 de nivel difícil**
-- **20 son de selección múltiple** (pueden tener 1, 2 o 3 correctas)
+- **20 son de selección múltiple** (varían entre 1, 2 y 3 correctas)
+- Las **opciones se mezclan al azar** en cada intento (no hay posición "favorita")
+- Incluye **ejercicios numéricos de práctica** estilo campus: Shannon, Nyquist, PCM, dB/SNR, baudios
 - Corrección inmediata: te dice si está bien y, si no, **te explica por qué**
 - Explicaciones con **simuladores interactivos** (gráficos y animaciones que podés manipular):
   - 🌊 Onda senoidal (amplitud, frecuencia, fase)
@@ -42,8 +44,12 @@ Es una web estática sin dependencias. Opciones:
 
 ## 📚 Temario cubierto
 
+Alineado con el temario que confirmó la cátedra para el parcial (capítulos 1, 2, 3, 4, 5 y 8 de Stallings):
+
 | Unidad | Temas |
 |---|---|
-| **U1** | Modelo de comunicación, tareas, LAN/WAN/MAN, conmutación de circuitos y paquetes, Internet, arquitectura de protocolos, encapsulamiento y PDU, TCP/IP, TCP/UDP, IP/TTL/IPv6, OSI, Ethernet y CSMA/CD, tráfico elástico/inelástico |
-| **U2** | Enlaces y sentidos de transmisión, datos vs. señales, onda senoidal, Fourier, espectro y ancho de banda, componente DC, atenuación/distorsión de retardo/ISI, tipos de ruido, dB/dBm/SNR, Nyquist, Shannon, Eb/N0 |
-| **U3** | Par trenzado/coaxial/fibra, categorías y parámetros de cobre, cableado estructurado y normas (TIA/ISO/IRAM), T568A/B, PoE, antenas, microondas, satélite GEO, Fresnel, FSPL, codificación de línea (NRZ/NRZI/AMI/Manchester/B8ZS/HDB3), modulación (ASK/FSK/PSK/QAM), PCM y delta, FDM/WDM/TDM/STDM, ADSL/DMT, FDD/TDD, FDMA/TDMA |
+| **U1** | Modelo general de comunicación, tareas, LAN/WAN/MAN, **conmutación de circuitos vs. paquetes**, Internet, arquitectura de protocolos, **encapsulamiento y PDU**, **capas TCP/IP**, **TCP vs. UDP**, **ACK**, **IP vs. MAC**, TTL/IPv6, OSI, Ethernet y CSMA/CD, tráfico elástico/inelástico |
+| **U2** | Sentidos de transmisión, datos vs. señales, **amplitud/período/fase/frecuencia**, **dominio del tiempo vs. frecuencia**, **Fourier y por qué un pulso digital tiene infinitas frecuencias**, ancho de banda, componente DC, **atenuación/distorsión de retardo/ISI**, **tipos de ruido**, **dB/dBm/SNR (interpretación de −3 dB)**, **Nyquist y Shannon con ejercicios numéricos**, Eb/N0 |
+| **U3** | Par trenzado/coaxial/**fibra (inmunidad EMI)**, monomodo/multimodo, microondas, Fresnel, FSPL, codificación de línea (NRZ/NRZI/AMI/Manchester/B8ZS/HDB3), **modulación ASK/FSK/PSK/QAM**, baudios vs. bps, **PCM con cálculo de tasa**, **multiplexación FDM/TDM/STDM/WDM**, ADSL/DMT, FDD/TDD |
+
+> No incluye los temas que la cátedra dejó para después del parcial: detección/corrección de errores (cap. 6), control de enlace, ATM, ICMP/IGMP en detalle ni SONET/SDH en detalle.
