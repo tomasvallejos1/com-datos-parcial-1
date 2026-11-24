@@ -53,3 +53,5 @@ Alineado con el temario que confirmó la cátedra para el parcial (capítulos 1,
 | **U3** | Par trenzado/coaxial/**fibra (inmunidad EMI)**, monomodo/multimodo, microondas, Fresnel, FSPL, codificación de línea (NRZ/NRZI/AMI/Manchester/B8ZS/HDB3), **modulación ASK/FSK/PSK/QAM**, baudios vs. bps, **PCM con cálculo de tasa**, **multiplexación FDM/TDM/STDM/WDM**, ADSL/DMT, FDD/TDD |
 
 > No incluye los temas que la cátedra dejó para después del parcial: detección/corrección de errores (cap. 6), control de enlace, ATM, ICMP/IGMP en detalle ni SONET/SDH en detalle.
+
+hola
